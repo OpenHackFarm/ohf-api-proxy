@@ -7,6 +7,7 @@ import requests
 import json
 from dateutil import parser
 import datetime
+import pymysql
 
 from config import *
 
@@ -62,6 +63,25 @@ def latest_sensor_data(dev_id=None):
     ret_data['time'] = (parser.parse(ret_data['time']) + datetime.timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
 
     return ret_data
+
+
+@app.route('/planting/resume/<planting_id>', methods=['GET'])
+def crop_resume(planting_id=None):
+    conn = pymysql.connect(host=DB_HOST, user=DB_USER, password=DB_PASSWORD, db=DB_DB, charset='utf8mb4', cursorclass=pymysql.cursors.DictCursor)
+    c = conn.cursor()
+    c.execute("SELECT * FROM activities WHERE planting_uuid = '%s' ORDER BY date" % planting_id)
+    activities = c.fetchall()
+
+    ret = []
+    for a in activities:
+        _ = {}
+        _['action'] = a['action']
+        _['date'] = str(a['date'])
+        _['image'] = a['image_url']
+
+        ret.append(_)
+
+    return jsonify({'activities': ret})
 
 
 if __name__ == '__main__':
