@@ -8,6 +8,9 @@ import json
 
 from config import *
 
+import xml.etree.ElementTree as ET
+import WeatherParse as WP
+
 
 class MyResponse(Response):
     @classmethod
@@ -24,6 +27,15 @@ app.response_class = MyResponse
 @app.route('/index')
 def index():
     return jsonify({'message': 'hello'})
+
+
+@app.route('/special_weather', methods=['GET'])
+def cwb_special_weather():
+    xmlTree = WP.getWeatherXML('http://opendata.cwb.gov.tw/opendataapi?dataid=W-C0033-002&authorizationkey=%s' % CWB_AUTHORIZATION_KEY)
+    root = ET.fromstring(xmlTree)
+    resultJSON = WP.getAllData(root)
+
+    return jsonify(resultJSON)
 
 if __name__ == '__main__':
     app.run(host=HOST, port=PORT)
