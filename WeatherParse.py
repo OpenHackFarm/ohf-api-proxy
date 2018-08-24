@@ -59,7 +59,7 @@ def getCityinfo(f):
     data = json.load(f)
     resultList = []
     for city in data:
-        resultList.append(re.sub(r'縣|市', '', city))
+        resultList.append(city)
 
     return resultList
 
@@ -120,4 +120,18 @@ def getAllData(root):
 
     return resultDict
 
+def sortHazardsCity(root):
+    hazards = getWeatherHazards(root)
+    cityInfoArray = []
+    for data in hazards:
+        cityInfoArray += hazards[data]
+    cityInfoSet = set(cityInfoArray)
+    return cityInfoSet
+
+def filterHazardCity(cityInfoSet, targetCity):
+   
+    if cityInfoSet & targetCity:
+        return True
+    else:
+        return False
 
