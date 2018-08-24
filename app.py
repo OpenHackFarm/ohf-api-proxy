@@ -44,7 +44,7 @@ def cwb_special_weather(city=None):
         else:
             resultDict = {}
             resultDict['WeatherAlarm'] = [] 
-            return resultDict 
+            return jsonify(resultDict) 
     else:
         return jsonify(resultJSON)
 
