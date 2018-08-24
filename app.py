@@ -6,8 +6,7 @@ from flask_cors import CORS
 import requests
 import json
 
-HOST = '0.0.0.0'
-PORT = 8008
+from config import *
 
 
 class MyResponse(Response):
