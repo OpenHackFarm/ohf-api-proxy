@@ -30,12 +30,23 @@ def index():
 
 
 @app.route('/special_weather', methods=['GET'])
-def cwb_special_weather():
+@app.route('/special_weather/<city>', methods=['GET'])
+def cwb_special_weather(city=None):
     xmlTree = WP.getWeatherXML('http://opendata.cwb.gov.tw/opendataapi?dataid=W-C0033-002&authorizationkey=%s' % CWB_AUTHORIZATION_KEY)
     root = ET.fromstring(xmlTree)
     resultJSON = WP.getAllData(root)
-
-    return jsonify(resultJSON)
+    if city:
+        cityInfoSet = WP.sortHazardsCity(root)
+        temp = city.split(",")
+        bCheckCity = WP.filterHazardCity(cityInfoSet,set(temp))
+        if bCheckCity:
+            return jsonify(resultJSON)
+        else:
+            resultDict = {}
+            resultDict['WeatherAlarm'] = [] 
+            return resultDict 
+    else:
+        return jsonify(resultJSON)
 
 if __name__ == '__main__':
-    app.run(host=HOST, port=PORT)
+    app.run(debug=True, host=HOST, port=PORT)
